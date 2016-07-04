@@ -24,12 +24,19 @@
 			this.salary = net;
 		}
 
-		angular
-			.module("ng")
-			.run(function($rootScope){
-				window.scope = $rootScope;
-				scope.calculator = window.calculator = new SalaryCalculator();
-			});
+		var myApp = angular.module("myApp", [])
+		myApp.controller("calculatorController", function($scope){
+			$scope.calculator = new SalaryCalculator();
+		});
+		myApp.controller("greetController", function($scope){
+			$scope.greeter = {
+				name : '',
+				message : '',
+				greet : function(){
+					this.message = 'Hi ' + this.name + ', Have a nice day!';
+				}
+			};
+		})
 	</script>
 	<style>
 		
@@ -46,8 +53,8 @@
 	</style>
 	
 </head>
-<body ng-app>
-	<div id="calculator">
+<body ng-app="myApp">
+	<div ng-controller="calculatorController">
 		<h1>Salary Calculator</h1>
 		<div class="content">
 			<div class="field">
@@ -71,10 +78,14 @@
 				<input type="button" value="Calculate" id="btnCalculate" ng-click="calculator.calculate()">
 			</div>
 			<div class="field">
-				<div id="divResult" ng-bind="calculator.salary">[Salary]</div>
+				<div id="divResult" ng-bind="calculator.salary | currency:'Rs'">[Salary]</div>
 			</div>
 		</div>
 	</div>
-	
+	<div ng-controller="greetController">
+		<input type="text" name="" id="" ng-model="greeter.name">
+		<input type="button" value="Greet" ng-click="greeter.greet()">
+		<div ng-bind="greeter.message"></div>
+	</div>
 </body>
 </html>
