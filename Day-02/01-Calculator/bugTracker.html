@@ -70,9 +70,7 @@
 						bugs.splice(i,1);
 			};
 
-			this.getClosedCount = function(){
-				return bugs.filter(bug => { return bug.isClosed}).length;
-			}
+			
 
 		})
 		bugTrackerApp.factory("bugOperations" , function(){
@@ -103,6 +101,35 @@
 				$scope.newBug = '';
 			}
 
+		});
+		bugTrackerApp.value("appDefaults", {
+			trimLength : 30
+		});
+
+		bugTrackerApp.filter("trimText", function(appDefaults){
+			return function(data, trimLength){
+				trimLength = trimLength || appDefaults.trimLength;
+				return data.length > trimLength ? data.substr(0,trimLength) + '...' : data;
+			}
+		});
+
+		/*bugTrackerApp.filter("toClosedCount", function(){
+			return function(bugs){
+				return bugs.filter(bug => { return bug.isClosed}).length;
+			}
+		});*/
+
+		/*bugTrackerApp.filter("toClosedCount", function($filter){
+			var builtinFilter = $filter('filter');
+			return function(bugs){
+				return builtinFilter(bugs, {isClosed : true}).length;
+			}
+		});*/
+
+		bugTrackerApp.filter("toClosedCount", function(){
+			return function(bugs){
+				return bugs.reduce( (result, bug) => bug.isClosed ? ++result : result, 0) ;
+			}
 		})
 
 	</script>
@@ -111,7 +138,8 @@
 	<h1>Bug Tracker</h1>
 	<div class="content" ng-controller="bugsController">
 		<section class="stats">
-			<span class="closed">{{bugList.getClosedCount()}}</span>
+			<span class="closed">{{bugList.getAll() | toClosedCount}}</span>
+			<!-- <span class="closed">{{ (bugList.getAll() | filter:{isClosed : true}).length  }}</span> -->
 			<span> / </span>
 			<span>{{bugList.getAll().length}}</span>
 		</section>
@@ -144,7 +172,7 @@
 					<span  
 						ng-click="toggleBug(bug)"
 						ng-class="{closed : bug.isClosed}"
-						>{{bug.name}}</span>
+						>{{bug.name | trimText}}</span>
 				</li>
 			</ol>
 		</section>
