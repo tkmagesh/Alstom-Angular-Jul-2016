@@ -6,7 +6,7 @@
 	<script src="angular.min.js"></script>
 	<script>
 		var calculatorApp = angular.module("calculatorApp", []);
-		var calculator = {
+		window.calculator = {
 			add : function(n1,n2){
 				return n1 + n2;
 			},
@@ -40,6 +40,17 @@
 			}
 		});
 
+		calculatorApp.controller("calculatorController2", function($scope){
+			$scope.number1 = 0;
+			$scope.number2 = 0;
+			$scope.result = 0;
+
+			$scope.operation = '';
+			$scope.calculate = function(){
+				$scope.result = calculator[$scope.operation]($scope.number1, $scope.number2);
+			}
+		});
+
 	</script>
 </head>
 <body ng-app="calculatorApp" >
@@ -56,17 +67,17 @@
 		<div>{{result}}</div>
 	</div>
 	<hr>
-	<div>
-		<input type="number" >
-		<select >
+	<div ng-controller="calculatorController2">
+		<input type="number" ng-model="number1">
+		<select ng-model="operation">
 			<option value="add">Add</option>
 			<option value="subtract">Subtract</option>
 			<option value="multiply">Multiply</option>
 			<option value="divide">Divide</option>
 		</select>
-		<input type="number" >
-		<input type="button" value="Calculate">
-		<div></div>
+		<input type="number" ng-model="number2">
+		<input type="button" value="Calculate" ng-click="calculate()">
+		<div>{{result}}</div>
 	</div>
 </body>
 </html>
