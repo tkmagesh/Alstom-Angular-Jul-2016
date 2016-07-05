@@ -23,18 +23,19 @@
 			padding: 5px;
 			border-radius: 5px;
 			margin-bottom: 10px;
+			cursor: pointer;
 		}
 			
 	</style>
 	<script>
 		/*
-			1. List the bugs
-			2. Add a new bug
-			3. Toggle the 'closed' status of a bug
-			4. Remove closed bugs
-			5. Display statistics
-			6. Search for bugs
-			7. Sort the bugs
+			1. List the bugs - done
+			2. Add a new bug - done
+			3. Toggle the 'closed' status of a bug - done
+			4. Remove closed bugs - done
+			5. Display statistics - done
+			6. Search for bugs - done
+			7. Sort the bugs - done
 			8. Improvise the bug display
 			9. Persist the bugs in localStorage
 			10. Display 'createdAt'
@@ -43,38 +44,95 @@
 		*/
 
 	</script>
+	<script src="angular.min.js"></script>
+	<script>
+		var bugTrackerApp = angular.module("bugTrackerApp", []);
+		bugTrackerApp.factory("bugOperations" , function(){
+			var maxBugId = 0;
+			return {
+				create : function(name){
+					return {
+						id : ++maxBugId,
+						name : name,
+						isClosed : false
+					}
+				},
+				toggle : function(bug){
+					bug.isClosed = !bug.isClosed;
+				}
+			}
+		});
+
+		bugTrackerApp.controller("bugsController", function($scope, bugOperations){
+			$scope.bugs = [
+				bugOperations.create("Object reference not found"),
+				bugOperations.create("Invalid memory access"),
+				bugOperations.create("User action failure")
+			];
+
+				
+
+			$scope.addNew = function(newBugName){
+				var newBug = bugOperations.create(newBugName)
+				$scope.bugs.push(newBug);
+			};
+
+			$scope.toggleBug = function(bug){
+				bugOperations.toggle(bug);
+			};
+
+			$scope.removeClosed = function(){
+				for(var i=$scope.bugs.length-1; i>=0; i--)
+					if ($scope.bugs[i].isClosed)
+						$scope.bugs.splice(i,1);
+			};
+
+			$scope.getClosedCount = function(){
+				return $scope.bugs.filter(bug => { return bug.isClosed}).length;
+			}
+		})
+
+	</script>
 </head>
-<body>
+<body ng-app="bugTrackerApp">
 	<h1>Bug Tracker</h1>
-	<div class="content">
+	<div class="content" ng-controller="bugsController">
 		<section class="stats">
-			<span class="closed">2</span>
+			<span class="closed">{{getClosedCount()}}</span>
 			<span> / </span>
-			<span>10</span>
+			<span>{{bugs.length}}</span>
 		</section>
 		<section class="search">
 			<label for="">Search :</label>
-			<input type="text" name="" id="">
+			<input type="text" ng-model="searchBug.name">
 			<label for="">Closed ? :</label>
-			<input type="checkbox" name="" id="">
-			<input type="button" value="Show All">
+			<input type="checkbox" ng-model="searchBug.isClosed">
+			<input type="button" value="Show All" ng-click="searchBug.isClosed = ''">
 		</section>
 		<section class="sort">
 			<label for="">Order By :</label>
-			<input type="text" name="" id="">
+			<select ng-model="sortOrder">
+				<option value="name">Name</option>
+				<option value="isClosed">Status</option>
+			</select>
 			<label for=""> Descending ? :</label>
-			<input type="checkbox" name="" id="">
+			<input type="checkbox" ng-model="sortDescending">
 		</section>
 		<section class="edit">
 			<label for="">Bug :</label>
-			<input type="text" name="" id="">
-			<input type="button" value="Add New">
-			<input type="button" value="Remove Closed">
+			<input type="text" ng-model="newBug">
+			<input type="button" value="Add New" ng-click="addNew(newBug)">
+			<input type="button" value="Remove Closed" ng-click="removeClosed()">
 		</section>
+
 		<section class="list">
-			<ol>
-				<li><span class="bugname closed" >Object reference not found</span></li>
-				<li><span>User interaction failure</span></li>
+			<ol>				
+				<li ng-repeat="bug in (bugs | filter:searchBug | orderBy:sortOrder:sortDescending)">
+					<span  
+						ng-click="toggleBug(bug)"
+						ng-class="{closed : bug.isClosed}"
+						>{{bug.name}}</span>
+				</li>
 			</ol>
 		</section>
 	</div>
