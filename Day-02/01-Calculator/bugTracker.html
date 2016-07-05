@@ -36,8 +36,20 @@
 			5. Display statistics - done
 			6. Search for bugs - done
 			7. Sort the bugs - done
-			8. Improvise the bug display
+			8. Improvise the bug display - done
 			9. Persist the bugs in localStorage
+				//window.localStorage
+					- key/value store
+					- value has to be string
+						- angular.toJson() & angular.fromJson()
+					- APIs
+						* setItem(key, value)
+						* getItem(key)  //=> value
+						* removeItem(key)
+						* key(index) //key @ index
+						* clear()
+
+						* length
 			10. Display 'createdAt'
 			11. Persist the bugs in the server
 			12. Bugs should be 'bookmarkable'
@@ -45,8 +57,11 @@
 
 	</script>
 	<script src="angular.min.js"></script>
+	<script src="utils.js"></script>
 	<script>
-		var bugTrackerApp = angular.module("bugTrackerApp", []);
+		
+
+		var bugTrackerApp = angular.module("bugTrackerApp", ["utils"]);
 
 		bugTrackerApp.service("bugsCollection", function(bugOperations){
 			var bugs = [
@@ -106,12 +121,7 @@
 			trimLength : 30
 		});
 
-		bugTrackerApp.filter("trimText", function(appDefaults){
-			return function(data, trimLength){
-				trimLength = trimLength || appDefaults.trimLength;
-				return data.length > trimLength ? data.substr(0,trimLength) + '...' : data;
-			}
-		});
+		
 
 		/*bugTrackerApp.filter("toClosedCount", function(){
 			return function(bugs){
