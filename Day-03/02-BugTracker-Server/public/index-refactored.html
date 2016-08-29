@@ -106,29 +106,67 @@
 			}
 		});
 
-		
+		bugTrackerApp.service('bugService', function(bugOperations, $http){
 
-		bugTrackerApp.controller("bugsController", function($scope, bugsCollection, bugOperations, $http){
+			this.getAll = function(newBugName){
+				/*var p = $http.get('http://localhost:3000/bugs');
+				var resultPromise = p.then(function(response){
+					return response.data;
+				});
+				return resultPromise;*/
+
+				return $http
+					.get('http://localhost:3000/bugs')
+					.then(function(response){
+						return response.data;
+					});
+			};
+
+			this.toggle = function(bug){
+				bugOperations.toggle(bug);
+				return $http
+					.put(`http://localhost:3000/bugs/${bug.id}`, bug)
+					.then(function(response){
+						return response.data;
+					});
+			};
+
+			this.addNew = function(newBugName){
+				return $http
+					.post('http://localhost:3000/bugs', bugOperations.create(newBugName))
+					.then(function(response){
+						return response.data;
+					});
+			}
+
+			this.remove = function(bug){
+				return $http
+					.delete(`http://localhost:3000/bugs/${bug.id}`, bug)
+					.then(function(response){
+						return response.data;
+					});
+			};
+		})
+
+		bugTrackerApp.controller("bugsController", function($scope, bugService){
 			
 
 
-			$scope.bugList = [];
+			$scope.list = [];
 
-			var p = $http.get('http://localhost:3000/bugs');
-			p.then(function(response){
-				$scope.list = response.data;
-			})
+			bugService.getAll().then(function(bugs){
+				$scope.list = bugs;
+			});
+			
 			$scope.toggleBug = function(bug){
-				bugOperations.toggle(bug);
-				$http.put('http://localhost:3000/bugs/' + bug.id, bug);
+				bugService.toggle(bug);
 			};
 			$scope.addNew = function(newBugName){
-				var p = $http.post('http://localhost:3000/bugs', bugOperations.create(newBugName));
-				p.then(function(response){
-					$scope.list.push(response.data);
-				});
-
-				//bugsCollection.addNew(newBugName);
+				bugService
+					.addNew(newBugName)
+					.then(function(newBug){
+						$scope.list.push(newBug);
+					})
 				$scope.newBug = '';
 			}
 
@@ -136,7 +174,7 @@
 				for(var i = $scope.list.length-1; i >= 0; i--){
 					var bug = $scope.list[i];
 					if (bug.isClosed){
-						var promise = $http.delete('http://localhost:3000/bugs/' + bug.id);
+						bugService.remove(bug);
 						$scope.list.splice(i,1);
 					}
 				}

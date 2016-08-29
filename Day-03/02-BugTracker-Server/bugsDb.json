@@ -11,6 +11,12 @@
       "name": "Promises are not very promising",
       "isClosed": false,
       "createdAt": "2016-08-29T08:49:20.794Z"
+    },
+    {
+      "id": 12,
+      "name": "Another new bug - 2",
+      "isClosed": false,
+      "createdAt": "2016-08-29T09:48:53.131Z"
     }
   ]
 }
