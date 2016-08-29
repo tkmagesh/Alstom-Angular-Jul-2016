@@ -1,0 +1,19 @@
+	<section class="content" >
+		<h3>Projects</h3>
+		<hr>
+		<section class="edit">
+			<label for="">Project :</label>
+			<input type="text" ng-model="newProject">
+			<input type="button" value="Add New" ng-click="addNewProject(newProject)">
+		</section>
+		<section class="list">
+			<ol>
+				<li ng-repeat="project in projects">
+					<span  class="bugname" >{{project.name}}</span>
+					<input type="button" value="Show Bugs" ng-click="showBugsForProject(project.id)">
+				</li>
+				
+			</ol>
+			
+		</section>
+	</section>

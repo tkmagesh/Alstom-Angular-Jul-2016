@@ -1,0 +1,28 @@
+{
+  "bugs": [
+    {
+      "id": 1,
+      "name": "message not displayed when needed",
+      "isClosed": false,
+      "createdAt": "2016-08-03T06:37:19.902Z"
+    },
+    {
+      "id": 10,
+      "name": "Promises are not very promising",
+      "isClosed": false,
+      "createdAt": "2016-08-29T08:49:20.794Z"
+    },
+    {
+      "id": 12,
+      "name": "Another new bug - 2",
+      "isClosed": false,
+      "createdAt": "2016-08-29T09:48:53.131Z"
+    },
+    {
+      "id": 13,
+      "name": "Another bug - 3",
+      "isClosed": false,
+      "createdAt": "2016-08-29T10:57:54.167Z"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+<section class="content">
+		<h3>Bugs</h3>
+		<hr>
+		<section class="stats">
+			<!-- <span class="closed">{{ (bugs | filter:{isClosed : true}).length }}</span> -->
+			 <span class="closed">{{bugs | toClosedCount}}</span> 
+			<span> / </span>
+			<span>{{bugs.length}}</span>
+		</section>
+		<section class="search">
+			<label for="">Search :</label>
+			<input type="text" ng-model="searchBug.name">
+			<label for="">Is Closed ? :</label>
+			<input type="checkbox" ng-model="searchBug.isClosed">
+			<input type="button" value="Show All" ng-click="searchBug={}">
+		</section>
+		<section class="sort">
+			<label for="">Order By :</label>
+			<!-- <input type="text" ng-model="sortBugBy"> -->
+			<select  ng-model="sortBugBy">
+				<option value="name">Name</option>
+				<option value="isClosed">Status</option>
+			</select>
+
+			<label for="">Descending ? :</label>
+			<input type="checkbox" ng-model="sortBugOrder">
+		</section>
+		<section class="edit">
+			<label for="">Bug :</label>
+			<input type="text" ng-model="newBug">
+			<select ng-model="newBugSelectedProject">
+				<option ng-repeat="project in projects" value="{{project.id}}">{{project.name}}</option>
+			</select>
+			<input type="button" value="Add New" ng-click="addNewBug()">
+		</section>
+		<section class="list">
+			<ol>
+				<li ng-repeat="bug in (bugs | filter:searchBug | orderBy:sortBugBy:sortBugOrder) ">
+					<span  ng-class="{closed : bug.isClosed}"class="bugname" ng-click="toggleBug(bug)">{{bug.name | trimText}}</span>
+				</li>
+				
+			</ol>
+			<input type="button" value="Remove Closed" ng-click="removeClosed()">
+		</section>
+		
+	</section>
