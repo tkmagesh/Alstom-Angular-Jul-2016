@@ -28,8 +28,22 @@ var ops = (function(){
 		});
 	}
 
+	function addAsyncPromise(x,y){
+		console.log(`   [Service Provider] - processing ${x} and ${y}`);
+		var p = new Promise(function(resolveFn, rejectFn){
+			setTimeout(function(){
+				var result = x + y;
+				console.log(`   [Service Privider] - returning the result`);
+				resolveFn(result);
+			},3000);
+		});
+		return p;
+		
+	}
+
 	return {
 		addSyncClient : addSyncClient,
-		addAsyncClient : addAsyncClient
+		addAsyncClient : addAsyncClient,
+		addAsyncPromise : addAsyncPromise
 	}
 })();
