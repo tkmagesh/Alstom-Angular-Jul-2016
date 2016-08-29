@@ -90,13 +90,14 @@
 
 		})
 		bugTrackerApp.factory("bugOperations" , function(){
-			var maxBugId = 0;
+			//var maxBugId = 0;
 			return {
 				create : function(name){
 					return {
-						id : ++maxBugId,
+						id : 0,
 						name : name,
-						isClosed : false
+						isClosed : false,
+						createdAt : new Date()
 					}
 				},
 				toggle : function(bug){
@@ -105,16 +106,38 @@
 			}
 		});
 
-		bugTrackerApp.controller("bugsController", function($scope, bugsCollection, bugOperations){
-			console.log(bugsCollection.getAll());
+		bugTrackerApp.controller("bugsController", function($scope, bugsCollection, bugOperations, $http){
+			
 
-			$scope.bugList = bugsCollection;
+
+			$scope.bugList = [];
+
+			var p = $http.get('http://localhost:3000/bugs');
+			p.then(function(response){
+				$scope.list = response.data;
+			})
 			$scope.toggleBug = function(bug){
 				bugOperations.toggle(bug);
+				$http.put('http://localhost:3000/bugs/' + bug.id, bug);
 			};
 			$scope.addNew = function(newBugName){
-				bugsCollection.addNew(newBugName);
+				var p = $http.post('http://localhost:3000/bugs', bugOperations.create(newBugName));
+				p.then(function(response){
+					$scope.list.push(response.data);
+				});
+
+				//bugsCollection.addNew(newBugName);
 				$scope.newBug = '';
+			}
+
+			$scope.removeClosed = function(){
+				for(var i = $scope.list.length-1; i >= 0; i--){
+					var bug = $scope.list[i];
+					if (bug.isClosed){
+						var promise = $http.delete('http://localhost:3000/bugs/' + bug.id);
+						$scope.list.splice(i,1);
+					}
+				}
 			}
 
 		});
@@ -139,7 +162,7 @@
 
 		bugTrackerApp.filter("toClosedCount", function(){
 			return function(bugs){
-				return bugs.reduce( function(result, bug) {return bug.isClosed ? ++result : result, 0}) ;
+				return bugs && bugs.length ? bugs.reduce( function(result, bug) {return bug.isClosed ? ++result : result; }, 0) : 0;
 			}
 		})
 
@@ -149,10 +172,10 @@
 	<h1>Bug Tracker</h1>
 	<div class="content" ng-controller="bugsController">
 		<section class="stats">
-			<span class="closed">{{bugList.getAll() | toClosedCount}}</span>
+			<span class="closed">{{list | toClosedCount}}</span>
 			<!-- <span class="closed">{{ (bugList.getAll() | filter:{isClosed : true}).length  }}</span> -->
 			<span> / </span>
-			<span>{{bugList.getAll().length}}</span>
+			<span>{{list.length}}</span>
 		</section>
 		<section class="search">
 			<label for="">Search :</label>
@@ -174,12 +197,12 @@
 			<label for="">Bug :</label>
 			<input type="text" ng-model="newBug">
 			<input type="button" value="Add New" ng-click="addNew(newBug)">
-			<input type="button" value="Remove Closed" ng-click="bugList.removeClosed()">
+			<input type="button" value="Remove Closed" ng-click="removeClosed()">
 		</section>
 
 		<section class="list">
 			<ol>				
-				<li ng-repeat="bug in (bugList.getAll() | filter:searchBug | orderBy:sortOrder:sortDescending)">
+				<li ng-repeat="bug in (list | filter:searchBug | orderBy:sortOrder:sortDescending)">
 					<span  
 						ng-click="toggleBug(bug)"
 						ng-class="{closed : bug.isClosed}"
